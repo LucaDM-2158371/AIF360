@@ -88,6 +88,7 @@ class StandardDataset(BinaryLabelDataset):
         features_to_keep = features_to_keep or df.columns.tolist()
         keep = (set(features_to_keep) | set(protected_attribute_names)
               | set(categorical_features) | set([label_name]))
+
         if instance_weights_name:
             keep |= set([instance_weights_name])
         df = df[sorted(keep - set(features_to_drop), key=df.columns.get_loc)]
@@ -103,7 +104,7 @@ class StandardDataset(BinaryLabelDataset):
 
         # 5. Create a one-hot encoding of the categorical variables.
         df = pd.get_dummies(df, columns=categorical_features, prefix_sep='=')
-
+        
         # 6. Map protected attributes to privileged/unprivileged
         privileged_protected_attributes = []
         unprivileged_protected_attributes = []
@@ -130,6 +131,7 @@ class StandardDataset(BinaryLabelDataset):
         # 7. Make labels binary
         favorable_label = 1.
         unfavorable_label = 0.
+
         if callable(favorable_classes):
             df[label_name] = df[label_name].apply(favorable_classes)
         elif np.issubdtype(df[label_name], np.number) and len(set(df[label_name])) == 2:
